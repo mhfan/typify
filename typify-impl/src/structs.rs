@@ -43,7 +43,7 @@ impl TypeSpace {
             .collect::<Result<Vec<_>>>()?;
 
         // Sort parameters by name to ensure a deterministic result.
-        properties.sort_by(|a, b| a.name.cmp(&b.name));
+        //properties.sort_by(|a, b| a.name.cmp(&b.name)); // XXX:
 
         // If there are additional properties tack them on, flattened, at the
         // end. Note that a `None` value for additional_properties is
