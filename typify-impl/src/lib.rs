@@ -418,6 +418,7 @@ impl TypeSpace {
         self.next_id += def_len;
 
         for (index, (ref_name, schema)) in definitions.iter().enumerate() {
+//dbg!(ref_name);
             self.ref_to_id
                 .insert(ref_name.clone(), TypeId(base_id + index as u64));
             self.definitions.insert(ref_name.clone(), schema.clone());
@@ -508,6 +509,7 @@ impl TypeSpace {
             // (which may nor may not have already been converted). We
             // simply create a newtype with that type ID.
             TypeEntryDetails::Reference(type_id) => {
+//dbg!(metadata);
                 TypeEntryNewtype::from_metadata(self, type_name, metadata, type_id.clone())
             }
 

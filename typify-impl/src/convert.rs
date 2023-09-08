@@ -48,6 +48,7 @@ impl TypeSpace {
         type_name: Name,
         schema: &'a SchemaObject,
     ) -> Result<(TypeEntry, &'a Option<Box<Metadata>>)> {
+//dbg!(schema);
         match schema {
             // If we have a schema that has an instance type array that's
             // exactly two elements and one of them is Null, we have the
@@ -424,7 +425,7 @@ impl TypeSpace {
                 number: None,
                 string: None,
                 array: None,
-                object: None,
+                object: _, // XXX: validation?
                 reference: None,
                 extensions: _,
             } => match subschemas.as_ref() {
@@ -464,6 +465,19 @@ impl TypeSpace {
                     then_schema: None,
                     else_schema: None,
                 } => self.convert_not(type_name, metadata, subschema),
+
+                SubschemaValidation { // XXX:
+                    all_of: None, any_of: None, one_of: None, not: None,
+                    if_schema: _, then_schema, else_schema,
+                } => { let mut subschemas = vec![];
+                    if let Some(schema) = then_schema {
+                        subschemas.push(schema.as_ref().clone());
+                    }
+                    if let Some(schema) = else_schema {
+                        subschemas.push(schema.as_ref().clone());
+                    }   self.convert_all_of(type_name, metadata, &subschemas)
+                    //self.flattened_union_struct(type_name, metadata, &subschemas, false)
+                }
 
                 // Unknown
                 _ => todo!("{:#?}", subschemas),
@@ -657,6 +671,8 @@ impl TypeSpace {
                 let type_entry = self.untagged_enum(type_name, metadata, &subschemas)?;
                 Ok((type_entry, metadata))
             }
+
+            // FIXME: handle extensions?
 
             // Unknown
             SchemaObject { .. } => todo!(
@@ -971,7 +987,7 @@ impl TypeSpace {
             // bounds.
             // TODO failing that, we should find the type that most tightly
             // matches these bounds.
-            Ok((TypeEntry::new_integer("i64"), metadata))
+            Ok((TypeEntry::new_integer("u32"), metadata))
         }
     }
 
@@ -993,7 +1009,7 @@ impl TypeSpace {
         }
         */
 
-        Ok((TypeEntry::new_float("f64"), &None))
+        Ok((TypeEntry::new_float("f32"), &None))
     }
 
     /// If we have a schema that's just the Null instance type, it represents a
@@ -1069,10 +1085,11 @@ impl TypeSpace {
             panic!("external references are not supported: {}", ref_name);
         }
         let key = ref_key(ref_name);
+//dbg!(ref_name, &key, &self.ref_to_id);
         let type_id = self
             .ref_to_id
             .get(&key)
-            .unwrap_or_else(|| panic!("$ref {} is missing", ref_name));
+            .unwrap_or_else(|| panic!("$ref {} is missing", ref_name)); // FIXME:
         Ok((
             TypeEntryDetails::Reference(type_id.clone()).into(),
             metadata,

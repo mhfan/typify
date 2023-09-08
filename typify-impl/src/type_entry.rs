@@ -744,7 +744,7 @@ impl TypeEntry {
             }
         });
 
-        let untagged_newtype_from_string_impl = bespoke_impls
+        let _untagged_newtype_from_string_impl = bespoke_impls
             .contains(&TypeEntryEnumImpl::UntaggedFromStr)
             .then(|| {
                 let variant_name = variants
@@ -799,7 +799,7 @@ impl TypeEntry {
                 }
             });
 
-        let untagged_newtype_to_string_impl = bespoke_impls
+        let _untagged_newtype_to_string_impl = bespoke_impls
             .contains(&TypeEntryEnumImpl::UntaggedDisplay)
             .then(|| {
                 let variant_name = variants
@@ -817,7 +817,7 @@ impl TypeEntry {
                 }
             });
 
-        let convenience_from = {
+        let _convenience_from = {
             // Build a map whose key is the type ID or type IDs of the Item and
             // Tuple variants, and whose value is a tuple of the original index
             // and the variant itself. Any key that is seen multiple times has
@@ -925,17 +925,17 @@ impl TypeEntry {
                 #(#variants_decl)*
             }
 
-            impl From<&#type_name> for #type_name {
+            /* impl From<&#type_name> for #type_name {
                 fn from(value: &#type_name) -> Self {
                     value.clone()
                 }
-            }
+            } */
 
             #simple_enum_impl
             #default_impl
-            #untagged_newtype_from_string_impl
-            #untagged_newtype_to_string_impl
-            #convenience_from
+            //#untagged_newtype_from_string_impl
+            //#untagged_newtype_to_string_impl
+            //#convenience_from
         };
         output.add_item(OutputSpaceMod::Crate, name, item);
     }
@@ -1046,11 +1046,11 @@ impl TypeEntry {
                     )*
                 }
 
-                impl From<&#type_name> for #type_name {
+                /* impl From<&#type_name> for #type_name {
                     fn from(value: &#type_name) -> Self {
                         value.clone()
                     }
-                }
+                } */
             },
         );
 
@@ -1466,7 +1466,7 @@ impl TypeEntry {
             #serde
             pub struct #type_name(#vis #inner_type_name);
 
-            impl std::ops::Deref for #type_name {
+            /* impl std::ops::Deref for #type_name {
                 type Target = #inner_type_name;
                 fn deref(&self) -> &#inner_type_name {
                     &self.0
@@ -1483,7 +1483,7 @@ impl TypeEntry {
                 fn from(value: &#type_name) -> Self {
                     value.clone()
                 }
-            }
+            } */
 
             #default_impl
             #constraint_impl
