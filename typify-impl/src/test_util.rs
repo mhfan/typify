@@ -299,7 +299,7 @@ impl SynCompare for Type {
             (Type::Path(a), Type::Path(b)) => a.syn_cmp(b, false),
             _ => Err(format!(
                 "unexpected or mismatched type pair: {:?} {:?}",
-                self, other
+                self.to_token_stream(), other.to_token_stream()
             )),
         }
     }
@@ -316,10 +316,10 @@ impl SynCompare for TypePath {
         assert!(self.qself.is_none());
         assert!(other.qself.is_none());
 
-        if self.path != other.path {
+        if self.path.to_token_stream().to_string() != other.path.to_token_stream().to_string() {
             Err(format!(
                 "paths did not match {:?} {:?}",
-                self.path, other.path
+                self.path.to_token_stream(), other.path.to_token_stream()
             ))
         } else {
             Ok(())
