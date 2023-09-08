@@ -398,7 +398,7 @@ impl TypeSpace {
             metadata,
             named_properties
                 .into_iter()
-                .chain(unnamed_properties.into_iter())
+                .chain(unnamed_properties)
                 .collect(),
             // Note that #[serde(deny_unknown_fields)] is incompatible with
             // #[serde(flatten)] which we use for the superclass(es).
@@ -735,7 +735,7 @@ mod tests {
 
         let mut type_space = TypeSpace::default();
         let (ty, _) = type_space.convert_schema(Name::Unknown, &schema).unwrap();
-        let output = ty.type_name(&type_space).replace(" ", "");
+        let output = ty.type_name(&type_space).replace(' ', "");
         assert_eq!(output, "serde_json::Map<String,serde_json::Value>");
     }
 }
